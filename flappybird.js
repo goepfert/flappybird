@@ -44,10 +44,14 @@ const draw = () => {
 
       bird.update();
       bird.show();
-
-      obstacles.forEach((obstacle) => {
-        obstacle.checkCollision(bird);
-      });
+      console.log(
+        '🚀 ~ file: flappybird.js ~ line 49 ~ gameID=setTimeout ~ bird.checkCollision(obstacles)',
+        bird.checkCollision(obstacles)
+      );
+      if (bird.checkCollision(obstacles)) {
+        running = false;
+        console.log('hello');
+      }
 
       if (frameCounter % 50 === 0) {
         obstacles.push(createObstacle(context, gameWidth, gameHeight));
@@ -95,7 +99,7 @@ const displayGameOver = () => {
   context.textAlign = 'center';
   context.fillText('Game Over', gameWidth / 2, gameHeight / 2);
   resetBtn.innerHTML = 'Restart';
-  resetBtn.classList.remove('disabled'); // would love to just disable the button, but then it also disables keydown somehow ... :(
+  //resetBtn.classList.remove('disabled'); // would love to just disable the button, but then it also disables keydown somehow ... :(
 };
 
 /**

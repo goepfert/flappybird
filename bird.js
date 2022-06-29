@@ -12,6 +12,9 @@ const createBird = (context, centerX, centerY, maxY) => {
   const lift = 15;
   let yVelocity = 0;
 
+  /**
+   * Draws the bird
+   */
   function show() {
     context.beginPath();
     context.arc(x, y, radius, 0, 2 * Math.PI, false);
@@ -22,6 +25,9 @@ const createBird = (context, centerX, centerY, maxY) => {
     context.stroke();
   }
 
+  /**
+   * Moves the bird
+   */
   function update() {
     yVelocity = yVelocity + gravity; // v = a*t + v_0; t==1
     y = y + yVelocity;
@@ -35,13 +41,33 @@ const createBird = (context, centerX, centerY, maxY) => {
     }
   }
 
+  /**
+   * Drags the bird upwards
+   */
   function up() {
     yVelocity -= lift;
+  }
+
+  function checkCollision(obstacles) {
+    let hit = false;
+
+    // forEach sucks in this case ...
+    obstacles.forEach((obstacle) => {
+      if (y < obstacle.top || y > gameHeight - obstacle.bottom) {
+        if (x > obstacle.left() && x < obstacle.right()) {
+          console.log('hit');
+          hit = true;
+        }
+      }
+    });
+
+    return hit;
   }
 
   return {
     show,
     update,
     up,
+    checkCollision,
   };
 };
