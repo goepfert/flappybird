@@ -3,11 +3,13 @@
  */
 
 const createBird = (context, centerX, centerY, maxY) => {
+  // const birdID = Math.random();
+
   let x = centerX;
   let y = centerY;
   const radius = 16;
   const gravity = 0.5;
-  const lift = 18;
+  const lift = 15;
   let yVelocity = 0;
 
   function show() {

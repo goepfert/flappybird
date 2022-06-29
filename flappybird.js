@@ -9,27 +9,20 @@ const context = board.getContext('2d');
 const resetBtn = document.getElementById('resetBtn');
 const gameWidth = board.getAttribute('width');
 const gameHeight = board.getAttribute('height');
-const snakeColor = 'Lime'; // https://htmlcolorcodes.com/color-names/
-const snakeBorder = 'black';
-const foodColor = 'Red';
-const unitSize = 25;
+
+let frameCounter = 0;
 let gameID = 0;
 let running = false;
-let xVelocity = unitSize;
-let yVelocity = 0;
-let foodX;
-let foodY;
-let score = 0;
-let snake = [];
-let wrap = true; // wrap the snake at the border
+
 let bird;
+let obstacles = [];
 
 /**
  * Setup the game
  */
 const setup = () => {
   bird = createBird(context, 64, gameHeight / 2, gameHeight);
-  running = true;
+  obstacles.push(createObstacle(context, gameWidth, gameHeight));
 };
 
 /**
@@ -38,9 +31,28 @@ const setup = () => {
 const draw = () => {
   if (running) {
     gameID = setTimeout(() => {
+      frameCounter++;
       clearBoard();
+
+      obstacles = obstacles.filter((obstacle) => {
+        return !obstacle.offscreen();
+      });
+      obstacles.forEach((obstacle) => {
+        obstacle.update();
+        obstacle.show();
+      });
+
       bird.update();
       bird.show();
+
+      obstacles.forEach((obstacle) => {
+        obstacle.checkCollision(bird);
+      });
+
+      if (frameCounter % 50 === 0) {
+        obstacles.push(createObstacle(context, gameWidth, gameHeight));
+      }
+
       draw();
     }, 20);
   } else {
@@ -53,12 +65,11 @@ const draw = () => {
  */
 const clearBoard = () => {
   context.fillStyle = getComputedStyle(board).getPropertyValue('--boardBackground');
-  console.log(gameWidth, gameHeight);
   context.fillRect(0, 0, gameWidth, gameHeight);
 };
 
 /**
- * Change snake's direction if arrow key is pressed
+ * TODO
  */
 const keyPressed = (event) => {
   const key = event.keyCode;
@@ -66,7 +77,6 @@ const keyPressed = (event) => {
 
   switch (key) {
     case SPACEBAR:
-      // do sth with the bird
       bird.up();
       break;
     default:
@@ -93,14 +103,18 @@ const displayGameOver = () => {
  * Block Start/Restart Button
  */
 const restartGame = () => {
-  running = true;
-  resetBtn.classList.add('disabled');
+  console.log('restartGame');
+  running = false;
+  obstacles.length = 0;
+  frameCounter = 0;
+  clearTimeout(gameID);
+  clearBoard();
+  // resetBtn.classList.add('disabled');
   setup();
+  running = true;
   draw();
 };
 
-setup();
-draw();
-
+restartGame();
 window.addEventListener('keydown', keyPressed, true);
-resetBtn.addEventListener('click', restartGame);
+resetBtn.addEventListener('mousedown', restartGame); // not only 'click', since it triggers also on spacebar
