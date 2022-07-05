@@ -14,14 +14,18 @@ let frameCounter = 0;
 let gameID = 0;
 let running = false;
 
-let bird;
+const TOTAL = 100;
+
+let bird = [];
 let obstacles = [];
 
 /**
  * Setup the game
  */
 const setup = () => {
-  bird = createBird(context, 64, gameHeight / 2, gameHeight);
+  for (let idx = 0; idx < TOTAL; idx++) {
+    bird[idx] = createBird(context, 64, gameHeight / 2, gameHeight, gameWidth);
+  }
   obstacles.push(createObstacle(context, gameWidth, gameHeight));
 };
 
@@ -34,25 +38,28 @@ const draw = () => {
       frameCounter++;
       clearBoard();
 
+      // Filter out obstacles than run out of screen
       obstacles = obstacles.filter((obstacle) => {
         return !obstacle.offscreen();
       });
+
+      // Update and draw obstacles
       obstacles.forEach((obstacle) => {
         obstacle.update();
         obstacle.show();
       });
 
+      // Update and draw bird
+      bird.think(obstacles);
       bird.update();
       bird.show();
-      console.log(
-        '🚀 ~ file: flappybird.js ~ line 49 ~ gameID=setTimeout ~ bird.checkCollision(obstacles)',
-        bird.checkCollision(obstacles)
-      );
+
+      // Check for collisions
       if (bird.checkCollision(obstacles)) {
         running = false;
-        console.log('hello');
       }
 
+      // Create new obstacle if needed
       if (frameCounter % 50 === 0) {
         obstacles.push(createObstacle(context, gameWidth, gameHeight));
       }
@@ -73,7 +80,7 @@ const clearBoard = () => {
 };
 
 /**
- * TODO
+ * React on spacebar keypress -> lifting the bird
  */
 const keyPressed = (event) => {
   const key = event.keyCode;

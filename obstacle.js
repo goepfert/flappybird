@@ -3,11 +3,17 @@
  */
 
 const createObstacle = (context, gameWidth, gameHeight) => {
-  let top = (Math.random() * gameHeight) / 2;
-  let bottom = (Math.random() * gameHeight) / 2;
+  //https://stackoverflow.com/questions/1527803/generating-random-whole-numbers-in-javascript-in-a-specific-range
+  function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  const spacing = 125;
+  const top = getRandomArbitrary(gameHeight / 6, (3 / 4) * gameHeight);
+  const bottom = gameHeight - (top + spacing);
   let x = gameWidth;
 
-  const obstacleWidth = 20;
+  const obstacleWidth = 80;
   let xVelocity = 5;
 
   function show() {
@@ -51,6 +57,7 @@ const createObstacle = (context, gameWidth, gameHeight) => {
     offscreen,
     top,
     bottom,
+    width: obstacleWidth,
     left,
     right,
   };
