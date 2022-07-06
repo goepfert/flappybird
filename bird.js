@@ -13,6 +13,16 @@ const createBird = (context, centerX, centerY, maxY, maxX) => {
   let yVelocity = 0;
   let score = 0;
   let fitness = 0;
+  const color = getRandomColor();
+
+  function getRandomColor() {
+    let letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
 
   /**
    * Draws the bird
@@ -20,7 +30,7 @@ const createBird = (context, centerX, centerY, maxY, maxX) => {
   function show() {
     context.beginPath();
     context.arc(x, y, radius, 0, 2 * Math.PI, false);
-    context.fillStyle = 'green';
+    context.fillStyle = color;
     context.fill();
     context.lineWidth = 1;
     context.strokeStyle = '#003300';
@@ -104,8 +114,12 @@ const createBird = (context, centerX, centerY, maxY, maxX) => {
     //if (output[0] > output[1] && this.velocity >= 0) {
     if (output[0] > 0.94) {
       //output[1]) {
-      this.up();
+      up();
     }
+  }
+
+  function getScore() {
+    return score;
   }
 
   return {
@@ -115,5 +129,6 @@ const createBird = (context, centerX, centerY, maxY, maxX) => {
     offscreen,
     checkCollision,
     think,
+    getScore,
   };
 };

@@ -16,17 +16,23 @@ let running = false;
 
 const TOTAL = 100;
 
-let bird = [];
+let birds = [];
+let copyBirds = [];
 let obstacles = [];
+
+let genAlg;
 
 /**
  * Setup the game
  */
 const setup = () => {
   for (let idx = 0; idx < TOTAL; idx++) {
-    bird[idx] = createBird(context, 64, gameHeight / 2, gameHeight, gameWidth);
+    birds[idx] = createBird(context, 64, gameHeight / 2, gameHeight, gameWidth);
   }
+
   obstacles.push(createObstacle(context, gameWidth, gameHeight));
+
+  genAlg = createGeneticAlgorithm();
 };
 
 /**
@@ -49,14 +55,25 @@ const draw = () => {
         obstacle.show();
       });
 
-      // Update and draw bird
-      bird.think(obstacles);
-      bird.update();
-      bird.show();
+      // Update and draw birds
 
-      // Check for collisions
-      if (bird.checkCollision(obstacles)) {
-        running = false;
+      for (let birdIdx = birds.length - 1; birdIdx >= 0; birdIdx--) {
+        birds[birdIdx].think(obstacles);
+        birds[birdIdx].update();
+        birds[birdIdx].show();
+
+        // Check for collisions
+        if (birds[birdIdx].checkCollision(obstacles)) {
+          //running = false;
+          copyBirds.push(birds.splice(birdIdx, 1)[0]);
+        }
+      }
+
+      if (birds.length === 0) {
+        genAlg.nextGeneration(birds, copyBirds);
+
+        //  console.log(birds[0]);
+        // console.log('test');
       }
 
       // Create new obstacle if needed
@@ -82,19 +99,19 @@ const clearBoard = () => {
 /**
  * React on spacebar keypress -> lifting the bird
  */
-const keyPressed = (event) => {
-  const key = event.keyCode;
-  const SPACEBAR = 32;
+// const keyPressed = (event) => {
+//   const key = event.keyCode;
+//   const SPACEBAR = 32;
 
-  switch (key) {
-    case SPACEBAR:
-      bird.up();
-      break;
-    default:
-      // nothing to do
-      break;
-  }
-};
+//   switch (key) {
+//     case SPACEBAR:
+//       bird.up();
+//       break;
+//     default:
+//       // nothing to do
+//       break;
+//   }
+// };
 
 /**
  * Display Game Over text
@@ -127,5 +144,5 @@ const restartGame = () => {
 };
 
 restartGame();
-window.addEventListener('keydown', keyPressed, true);
+// window.addEventListener('keydown', keyPressed, true);
 resetBtn.addEventListener('mousedown', restartGame); // not only 'click', since it triggers also on spacebar
