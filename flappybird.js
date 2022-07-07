@@ -26,13 +26,19 @@ let genAlg;
  * Setup the game
  */
 const setup = () => {
-  for (let idx = 0; idx < TOTAL; idx++) {
-    birds[idx] = createBird(context, 64, gameHeight / 2, gameHeight, gameWidth);
+  if (birds.length === 0) {
+    for (let idx = 0; idx < TOTAL; idx++) {
+      birds[idx] = createBird(context, 64, gameHeight / 2, gameHeight, gameWidth);
+    }
   }
 
-  obstacles.push(createObstacle(context, gameWidth, gameHeight));
+  if (obstacles.length === 0) {
+    obstacles.push(createObstacle(context, gameWidth, gameHeight));
+  }
 
-  genAlg = createGeneticAlgorithm();
+  if (typeof genAlg === 'undefined') {
+    genAlg = createGeneticAlgorithm();
+  }
 };
 
 /**
@@ -56,7 +62,6 @@ const draw = () => {
       });
 
       // Update and draw birds
-
       for (let birdIdx = birds.length - 1; birdIdx >= 0; birdIdx--) {
         birds[birdIdx].think(obstacles);
         birds[birdIdx].update();
@@ -69,16 +74,15 @@ const draw = () => {
         }
       }
 
-      if (birds.length === 0) {
-        genAlg.nextGeneration(birds, copyBirds);
-
-        //  console.log(birds[0]);
-        // console.log('test');
-      }
-
       // Create new obstacle if needed
       if (frameCounter % 50 === 0) {
         obstacles.push(createObstacle(context, gameWidth, gameHeight));
+      }
+
+      // No bird left
+      if (birds.length === 0) {
+        genAlg.nextGeneration(birds, copyBirds);
+        restartGame();
       }
 
       draw();

@@ -1,15 +1,24 @@
 const createGeneticAlgorithm = () => {
+  /**
+   * Creates the next bird generation
+   * 'Refills' the empty bird array based on some logic
+   */
   function nextGeneration(birds, copyBirds) {
     for (let i = 0; i < copyBirds.length; i++) {
       birds[i] = pickOne(copyBirds);
-      // console.log(i, birds[i].getScore());
     }
-
-    copyBirds = [];
+    copyBirds.length = 0;
   }
 
+  /**
+   * Taking the one with the best score
+   */
   function pickOne(copyBirds) {
-    let bestBird = copyBirds.reduce((best, bird) => (best.getScore() > bird.getScore() ? best : bird));
+    let bird = copyBirds.reduce((best, bird) => (best.getScore() > bird.getScore() ? best : bird)); //still a reference
+    let bestBird = bird.copy(bird.getBrain());
+    bestBird.mutate();
+
+    //TODO: here I need to mutate!
     return bestBird;
   }
 

@@ -15,6 +15,11 @@ const createBird = (context, centerX, centerY, maxY, maxX) => {
   let fitness = 0;
   const color = getRandomColor();
 
+  function copy() {
+    let newBird = createBird(context, centerX, centerY);
+    return newBird;
+  }
+
   function getRandomColor() {
     let letters = '0123456789ABCDEF';
     let color = '#';
@@ -123,6 +128,7 @@ const createBird = (context, centerX, centerY, maxY, maxX) => {
   }
 
   return {
+    copy,
     show,
     update,
     up,
