@@ -2,61 +2,42 @@
  * I'M A BIRD MOTHA' F*****
  */
 
-const createBird = (context, centerX, centerY, maxY, maxX) => {
-  // const birdID = Math.random();
+'use strict';
 
-  let x = centerX;
-  let y = centerY;
-  const radius = 16;
+const createBird = (_brain) => {
+  const x = 64;
+  const radius = 15;
   const gravity = 0.8;
   const lift = -12;
+
+  let color = utils.getRandomColor();
+  let y = GAME_HEIGHT / 2;
   let yVelocity = 0;
   let score = 0;
   let fitness = 0;
-  const color = getRandomColor();
+  let brain;
 
-  function copy() {
-    let newBird = createBird(context, centerX, centerY);
-    return newBird;
+  if (_brain !== undefined) {
+    brain = _brain.copy();
+  } else {
+    brain = createNetwork(5, 2);
   }
 
-  function getRandomColor() {
-    let letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
+  function dispose() {
+    brain.dispose();
   }
 
   /**
    * Draws the bird
    */
   function show() {
-    context.beginPath();
-    context.arc(x, y, radius, 0, 2 * Math.PI, false);
-    context.fillStyle = color;
-    context.fill();
-    context.lineWidth = 1;
-    context.strokeStyle = '#003300';
-    context.stroke();
-  }
-
-  /**
-   * Moves the bird
-   */
-  function update() {
-    score++;
-    yVelocity = yVelocity + gravity; // v = a*t + v_0; t==1
-    y = y + yVelocity;
-
-    if (y > maxY) {
-      yVelocity = 0;
-      y = maxY;
-    } else if (y < 0) {
-      yVelocity = 0;
-      y = 0;
-    }
+    CONTEXT.beginPath();
+    CONTEXT.arc(x, y, radius, 0, 2 * Math.PI, false);
+    CONTEXT.fillStyle = color;
+    CONTEXT.fill();
+    CONTEXT.lineWidth = 1;
+    CONTEXT.strokeStyle = '#003300';
+    CONTEXT.stroke();
   }
 
   /**
@@ -66,29 +47,8 @@ const createBird = (context, centerX, centerY, maxY, maxX) => {
     yVelocity += lift;
   }
 
-  /**
-   * Checks if bird is above or below screen
-   */
-  function offscreen() {
-    return y > maxY || y < 0;
-  }
-
-  /**
-   * Check for collision with obstacles
-   */
-  function checkCollision(obstacles) {
-    let hit = false;
-
-    for (let idx = 0; idx < obstacles.length; idx++) {
-      if (x > obstacles[idx].left() && x < obstacles[idx].right()) {
-        if (y < obstacles[idx].top || y > gameHeight - obstacles[idx].bottom) {
-          hit = true;
-          break;
-        }
-      }
-    }
-
-    return hit;
+  function mutate() {
+    brain.mutate(0.1);
   }
 
   function think(obstacles) {
@@ -109,32 +69,90 @@ const createBird = (context, centerX, centerY, maxY, maxX) => {
     }
 
     let inputs = [];
-    inputs[0] = y / maxY;
-    inputs[1] = closest.top / maxY;
-    inputs[2] = closest.bottom / maxY;
-    inputs[3] = closest.x / maxX;
+    inputs[0] = y / GAME_HEIGHT;
+    inputs[1] = closest.top / GAME_HEIGHT;
+    inputs[2] = closest.bottom / GAME_HEIGHT;
+    inputs[3] = closest.left() / GAME_WIDTH;
     inputs[4] = yVelocity / 10;
 
-    let output = [Math.random(), Math.random()]; //this.brain.predict(inputs);
-    //if (output[0] > output[1] && this.velocity >= 0) {
-    if (output[0] > 0.94) {
-      //output[1]) {
+    let xs = tf.tensor2d([inputs]);
+    let output = brain.predict(xs);
+    // console.log(inputs, output);
+    if (output[0] > output[1]) {
       up();
     }
+  }
+
+  /**
+   * Checks if bird is above or below screen
+   */
+  function offscreen() {
+    return y > GAME_HEIGHT || y < 0;
+  }
+
+  /**
+   * Moves the bird
+   */
+  function update() {
+    score++;
+    yVelocity = yVelocity + gravity; // v = a*t + v_0; t==1
+    y = y + yVelocity;
+
+    // if (y > GAME_HEIGHT) {
+    //   yVelocity = 0;
+    //   y = GAME_HEIGHT;
+    // } else if (y < 0) {
+    //   yVelocity = 0;
+    //   y = 0;
+    // }
   }
 
   function getScore() {
     return score;
   }
 
+  function getBrain() {
+    return brain;
+  }
+
+  function setFitness(_fitness) {
+    fitness = _fitness;
+  }
+
+  function getFitness() {
+    return fitness;
+  }
+
+  /**
+   * Check for collision with obstacles
+   */
+  function checkCollision(obstacles) {
+    let hit = false;
+
+    for (let idx = 0; idx < obstacles.length; idx++) {
+      if (x > obstacles[idx].left() && x < obstacles[idx].right()) {
+        if (y < obstacles[idx].top || y > GAME_HEIGHT - obstacles[idx].bottom) {
+          hit = true;
+          break;
+        }
+      }
+    }
+
+    return hit;
+  }
+
   return {
-    copy,
+    dispose,
     show,
-    update,
     up,
-    offscreen,
-    checkCollision,
+    mutate,
     think,
+    offscreen,
+    update,
     getScore,
+    getBrain,
+    setFitness,
+    getFitness,
+    checkCollision,
   };
 };

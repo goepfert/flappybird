@@ -2,31 +2,30 @@
  *
  */
 
-const createObstacle = (context, gameWidth, gameHeight) => {
+'use strict';
+
+const createObstacle = () => {
   //https://stackoverflow.com/questions/1527803/generating-random-whole-numbers-in-javascript-in-a-specific-range
-  function getRandomArbitrary(min, max) {
-    return Math.random() * (max - min) + min;
-  }
 
-  const spacing = 125;
-  const top = getRandomArbitrary(gameHeight / 6, (3 / 4) * gameHeight);
-  const bottom = gameHeight - (top + spacing);
-  let x = gameWidth;
+  const spacing = 150;
+  const top = utils.getRandomArbitrary(GAME_HEIGHT / 6, (3 / 4) * GAME_HEIGHT);
+  const bottom = GAME_HEIGHT - (top + spacing);
+  let x = GAME_WIDTH;
 
-  const obstacleWidth = 80;
+  const obstacleWidth = 50;
   let xVelocity = 5;
 
   function show() {
-    context.fillStyle = 'red';
-    context.strokeStyle = 'black';
+    CONTEXT.fillStyle = 'red';
+    CONTEXT.strokeStyle = 'black';
 
     // upper part of the obstacle
-    context.fillRect(x, 0, obstacleWidth, top);
-    context.strokeRect(x, 0, obstacleWidth, top);
+    CONTEXT.fillRect(x, 0, obstacleWidth, top);
+    CONTEXT.strokeRect(x, 0, obstacleWidth, top);
 
     // lower part of the obstacle
-    context.fillRect(x, gameHeight - bottom, obstacleWidth, gameHeight);
-    context.strokeRect(x, gameHeight - bottom, obstacleWidth, gameHeight);
+    CONTEXT.fillRect(x, GAME_HEIGHT - bottom, obstacleWidth, GAME_HEIGHT);
+    CONTEXT.strokeRect(x, GAME_HEIGHT - bottom, obstacleWidth, GAME_HEIGHT);
   }
 
   function update() {
@@ -35,7 +34,7 @@ const createObstacle = (context, gameWidth, gameHeight) => {
 
   function offscreen() {
     let ret = false;
-    if (x < 0 - gameWidth) {
+    if (x < 0 - GAME_WIDTH) {
       ret = true;
     }
     return ret;

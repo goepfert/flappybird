@@ -4,37 +4,42 @@
  *
  */
 
+'use strict';
+
 const board = document.getElementById('board');
-const context = board.getContext('2d');
 const resetBtn = document.getElementById('resetBtn');
-const gameWidth = board.getAttribute('width');
-const gameHeight = board.getAttribute('height');
+
+// Globals
+// Maybe used in other modules
+const CONTEXT = board.getContext('2d');
+const GAME_WIDTH = board.getAttribute('width');
+const GAME_HEIGHT = board.getAttribute('height');
+const N_BIRDS = 50;
 
 let frameCounter = 0;
+let frame_modulo = generateNewFrameModulo();
 let gameID = 0;
 let running = false;
-
-const TOTAL = 100;
 
 let birds = [];
 let copyBirds = [];
 let obstacles = [];
-
 let genAlg;
+
+tf.setBackend('cpu');
 
 /**
  * Setup the game
  */
 const setup = () => {
-  if (birds.length === 0) {
-    for (let idx = 0; idx < TOTAL; idx++) {
-      birds[idx] = createBird(context, 64, gameHeight / 2, gameHeight, gameWidth);
+  if (birds.length == 0) {
+    for (let idx = 0; idx < N_BIRDS; idx++) {
+      birds[idx] = createBird();
     }
   }
 
-  if (obstacles.length === 0) {
-    obstacles.push(createObstacle(context, gameWidth, gameHeight));
-  }
+  obstacles.length = 0;
+  obstacles.push(createObstacle());
 
   if (typeof genAlg === 'undefined') {
     genAlg = createGeneticAlgorithm();
@@ -62,21 +67,25 @@ const draw = () => {
       });
 
       // Update and draw birds
+      // Iterate backwards
       for (let birdIdx = birds.length - 1; birdIdx >= 0; birdIdx--) {
         birds[birdIdx].think(obstacles);
         birds[birdIdx].update();
         birds[birdIdx].show();
 
-        // Check for collisions
-        if (birds[birdIdx].checkCollision(obstacles)) {
+        // Check for collisions and offscreen
+        if (birds[birdIdx].checkCollision(obstacles) || birds[birdIdx].offscreen()) {
           //running = false;
+          // Cut out bird and copy into copyBirds array
           copyBirds.push(birds.splice(birdIdx, 1)[0]);
         }
       }
 
       // Create new obstacle if needed
-      if (frameCounter % 50 === 0) {
-        obstacles.push(createObstacle(context, gameWidth, gameHeight));
+      if (frameCounter % frame_modulo === 0) {
+        obstacles.push(createObstacle());
+        frameCounter = 0;
+        frame_modulo = generateNewFrameModulo();
       }
 
       // No bird left
@@ -86,18 +95,22 @@ const draw = () => {
       }
 
       draw();
-    }, 20);
+    }, 15);
   } else {
     displayGameOver();
   }
 };
 
+function generateNewFrameModulo() {
+  return Math.floor(utils.getRandomArbitrary(40, 80));
+}
+
 /**
  * Draws an empty board
  */
 const clearBoard = () => {
-  context.fillStyle = getComputedStyle(board).getPropertyValue('--boardBackground');
-  context.fillRect(0, 0, gameWidth, gameHeight);
+  CONTEXT.fillStyle = getComputedStyle(board).getPropertyValue('--boardBackground'); // from css
+  CONTEXT.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 };
 
 /**
@@ -135,7 +148,6 @@ const displayGameOver = () => {
  * Block Start/Restart Button
  */
 const restartGame = () => {
-  console.log('restartGame');
   running = false;
   obstacles.length = 0;
   frameCounter = 0;
