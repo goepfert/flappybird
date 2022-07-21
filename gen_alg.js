@@ -4,20 +4,40 @@ const createGeneticAlgorithm = () => {
   /**
    * Creates the next bird generation
    */
+
+  let bestBird;
+
   function nextGeneration(birds, copyBirds) {
+    console.log('🚀 ~ file: gen_alg.js ~ line 11 ~ nextGeneration ~ copyBirds', copyBirds.length);
+
     birds.length = 0;
     calculateFitness(copyBirds);
     for (let i = 0; i < N_BIRDS; i++) {
-      //birds[i] = pickOne(copyBirds);
-      birds[i] = pickBest(copyBirds);
+      birds[i] = pickOne(copyBirds);
+      //birds[i] = pickBest(copyBirds);
     }
+
+    if (bestBird === undefined) {
+      bestBird = createBird();
+    }
+
+    let bestBird_candidate = pickBest(copyBirds, false);
+    if (bestBird_candidate.getFitness() >= bestBird.getFitness()) {
+      // bestBird.dispose();
+      bestBird = bestBird_candidate;
+    } else {
+      // bestBird_candidate.dispose();
+    }
+
     for (let i = 0; i < copyBirds.length; i++) {
       copyBirds[i].dispose();
     }
+
     copyBirds.length = 0;
+    copyBirds.push(bestBird);
   }
 
-  function pickBest(copyBirds) {
+  function pickBest(copyBirds, doMutate = true) {
     let maxFitness = -1;
     let bird;
 
@@ -27,7 +47,9 @@ const createGeneticAlgorithm = () => {
       }
     }
     let child = createBird(bird.getBrain());
-    child.mutate();
+    if (doMutate) {
+      child.mutate(0.1, bird.getFitness());
+    }
     return child;
   }
 
@@ -41,7 +63,7 @@ const createGeneticAlgorithm = () => {
     index--;
     let bird = copyBirds[index];
     let child = createBird(bird.getBrain());
-    child.mutate();
+    child.mutate(0.1, bird.getFitness());
     return child;
   }
 

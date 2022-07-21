@@ -23,7 +23,8 @@ const createNetwork = (nInput_classes, nOutput_classes, _model) => {
     });
   }
 
-  function mutate(rate) {
+  function mutate(rate, fitness) {
+    const scale = utils.map(utils.getRandomArbitrary(0, 1 / fitness), 0, 50, 0, 1);
     tf.tidy(() => {
       const weights = model.getWeights();
       const mutatedWeights = [];
@@ -34,7 +35,7 @@ const createNetwork = (nInput_classes, nOutput_classes, _model) => {
         //console.log('🚀 ~ file: tf_network.js ~ line 35 ~ tf.tidy ~ values', i, values);
         for (let j = 0; j < values.length; j++) {
           if (Math.random() < rate) {
-            values[j] += utils.getRandomArbitrary(0, 0.5) * utils.randomGaussian();
+            values[j] += scale * utils.randomGaussian();
             //values[j] += Math.random() * utils.randomGaussian();
             //values[j] += utils.randomGaussian();
           }

@@ -47,8 +47,8 @@ const createBird = (_brain) => {
     yVelocity += lift;
   }
 
-  function mutate() {
-    brain.mutate(0.1);
+  function mutate(rate, fitness) {
+    brain.mutate(rate, fitness);
   }
 
   function think(obstacles) {
