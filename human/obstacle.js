@@ -13,10 +13,12 @@ const createObstacle = () => {
   let x = GAME_WIDTH;
 
   const obstacleWidth = Math.floor(utils.getRandomArbitrary(30, 80));
+  let color = utils.getRandomColor();
+
   let xVelocity = 5;
 
   function show() {
-    CONTEXT.fillStyle = 'red';
+    CONTEXT.fillStyle = color;
     CONTEXT.strokeStyle = 'black';
 
     // upper part of the obstacle

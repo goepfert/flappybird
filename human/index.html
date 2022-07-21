@@ -4,16 +4,15 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="../style.css" />
     <title>Flappy Bird</title>
   </head>
   <body>
     <div class="container">
-      <h1>Flappy the &#128036 learns to fly</h1>
-      <div>Learning the hard way. Give them some time &#128512. But if they resist to learn even after some minutes, reload page. </div>
-        <div> Want to try yourself, <a href="./human/index.html">go here</a>!</div>
+      <h1>Flappy the &#128036</h1>
+      <div>Control with spacebar. Want to compete with machine, <a href="../index.html">go here</a>!</div>
       <canvas id="board" width="800" height="600"> </canvas>
+      <button class="resetBtn" id="resetBtn">Start</button>
       <div class="score" id="scoreText">0</div>
       <div class="footer">
         Code available on
@@ -21,9 +20,7 @@
       </div>
     </div>
   </body>
-  <script src="utils.js"></script>
-  <script src="tf_network.js"></script>
-  <script src="gen_alg.js"></script>
+  <script src="../utils.js"></script>
   <script src="bird.js"></script>
   <script src="obstacle.js"></script>
   <script src="flappybird.js"></script>

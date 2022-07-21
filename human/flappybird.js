@@ -8,13 +8,13 @@
 
 const board = document.getElementById('board');
 const scoreText = document.getElementById('scoreText');
+const resetBtn = document.getElementById('resetBtn');
 
 // Globals
 // Maybe used in other modules
 const CONTEXT = board.getContext('2d');
 const GAME_WIDTH = +board.getAttribute('width');
 const GAME_HEIGHT = +board.getAttribute('height');
-const N_BIRDS = 50;
 
 let frameCounter = 0;
 let frame_modulo = generateNewFrameModulo();
@@ -23,29 +23,17 @@ let running = false;
 let currentScore = 0;
 let maxScore = 0;
 
-let birds = [];
-let copyBirds = [];
+let bird;
 let obstacles = [];
-let genAlg;
-
-tf.setBackend('cpu');
 
 /**
  * Setup the game
  */
 const setup = () => {
-  if (birds.length == 0) {
-    for (let idx = 0; idx < N_BIRDS; idx++) {
-      birds[idx] = createBird();
-    }
-  }
+  bird = createBird();
 
   obstacles.length = 0;
   obstacles.push(createObstacle());
-
-  if (typeof genAlg === 'undefined') {
-    genAlg = createGeneticAlgorithm();
-  }
 
   currentScore = 0;
   scoreText.textContent = `${currentScore} / ${maxScore}`;
@@ -75,19 +63,13 @@ const draw = () => {
         obstacle.show();
       });
 
-      // Update and draw birds
-      // Iterate backwards
-      for (let birdIdx = birds.length - 1; birdIdx >= 0; birdIdx--) {
-        birds[birdIdx].think(obstacles);
-        birds[birdIdx].update();
-        birds[birdIdx].show();
+      // Update and draw bird
+      bird.update();
+      bird.show();
 
-        // Check for collisions and offscreen
-        if (birds[birdIdx].checkCollision(obstacles) || birds[birdIdx].offscreen()) {
-          //running = false;
-          // Cut out bird and copy into copyBirds array
-          copyBirds.push(birds.splice(birdIdx, 1)[0]);
-        }
+      // Check for collisions and offscreen
+      if (bird.checkCollision(obstacles)) {
+        running = false;
       }
 
       // Create new obstacle if needed
@@ -96,15 +78,8 @@ const draw = () => {
         frameCounter = 0;
         frame_modulo = generateNewFrameModulo();
       }
-
-      // No bird left
-      if (birds.length === 0) {
-        genAlg.nextGeneration(birds, copyBirds);
-        restartGame();
-      }
-
       draw();
-    }, 15);
+    }, 17);
   } else {
     displayGameOver();
   }
@@ -123,15 +98,33 @@ const clearBoard = () => {
 };
 
 /**
+ * React on spacebar keypress -> lifting the bird
+ */
+const keyPressed = (event) => {
+  const key = event.keyCode;
+  const SPACEBAR = 32;
+
+  switch (key) {
+    case SPACEBAR:
+      bird.up();
+      break;
+    default:
+      // nothing to do
+      break;
+  }
+};
+
+/**
  * Display Game Over text
  * Enables Restart Button
  */
 const displayGameOver = () => {
-  context.font = '50px MV Boli';
-  context.fillStyle = 'black';
-  context.textAlign = 'center';
-  context.fillText('Game Over', gameWidth / 2, gameHeight / 2);
+  CONTEXT.font = '50px MV Boli';
+  CONTEXT.fillStyle = 'black';
+  CONTEXT.textAlign = 'center';
+  CONTEXT.fillText('Game Over', GAME_WIDTH / 2, GAME_HEIGHT / 2);
   resetBtn.innerHTML = 'Restart';
+  resetBtn.classList.remove('disabled'); // would love to just disable the button, but then it also disables keydown somehow ... :(
 };
 
 /**
@@ -144,9 +137,12 @@ const restartGame = () => {
   frameCounter = 0;
   clearTimeout(gameID);
   clearBoard();
+  resetBtn.classList.add('disabled');
   setup();
   running = true;
   draw();
 };
 
-restartGame();
+// restartGame();
+window.addEventListener('keydown', keyPressed, true);
+resetBtn.addEventListener('mousedown', restartGame); // not only 'click', since it triggers also on spacebar

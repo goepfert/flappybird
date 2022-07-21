@@ -5,23 +5,20 @@ const createGeneticAlgorithm = () => {
    * Creates the next bird generation
    */
 
-  let bestBird;
+  let bestBird = createBird();
 
   function nextGeneration(birds, copyBirds) {
     birds.length = 0;
     calculateFitness(copyBirds);
     for (let i = 0; i < N_BIRDS; i++) {
-      birds[i] = pickOne(copyBirds);
-      //birds[i] = pickBest(copyBirds);
+      //birds[i] = pickOne(copyBirds);
+      birds[i] = pickBest(copyBirds);
     }
 
-    if (bestBird === undefined) {
-      bestBird = createBird();
-    }
-
+    // I want to keep the best candidate (e.g. if next generation is a complete fail und not worth to replicate ... ;))
     let bestBird_candidate = pickBest(copyBirds, false);
     if (bestBird_candidate.getFitness() >= bestBird.getFitness()) {
-      // bestBird.dispose();
+      // bestBird.dispose(); // dunno why this breaks
       bestBird = bestBird_candidate;
     } else {
       // bestBird_candidate.dispose();
