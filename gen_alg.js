@@ -8,8 +8,6 @@ const createGeneticAlgorithm = () => {
   let bestBird;
 
   function nextGeneration(birds, copyBirds) {
-    console.log('🚀 ~ file: gen_alg.js ~ line 11 ~ nextGeneration ~ copyBirds', copyBirds.length);
-
     birds.length = 0;
     calculateFitness(copyBirds);
     for (let i = 0; i < N_BIRDS; i++) {
