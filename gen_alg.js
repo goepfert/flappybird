@@ -44,7 +44,7 @@ const createGeneticAlgorithm = () => {
     child.setFitness(bird.getFitness());
 
     if (doMutate) {
-      child.mutate(0.05, bird.getFitness());
+      child.mutate(0.1, bird.getFitness());
     }
     return child;
   }
