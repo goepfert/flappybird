@@ -8,13 +8,14 @@
 
 const board = document.getElementById('board');
 const scoreText = document.getElementById('scoreText');
+const pause = document.getElementById('pauseBtn');
 
 // Globals
 // Maybe used in other modules
 const CONTEXT = board.getContext('2d');
 const GAME_WIDTH = +board.getAttribute('width');
 const GAME_HEIGHT = +board.getAttribute('height');
-const N_BIRDS = 1;
+const N_BIRDS = 50;
 
 let frameCounter = 0;
 let frame_modulo = generateNewFrameModulo();
@@ -57,6 +58,7 @@ const setup = () => {
 const draw = () => {
   if (running) {
     gameID = setTimeout(() => {
+      pauseBtn.innerHTML = 'Pause';
       frameCounter++;
       currentScore++;
       maxScore = currentScore > maxScore ? currentScore : maxScore;
@@ -86,7 +88,7 @@ const draw = () => {
         if (birds[birdIdx].checkCollision(obstacles) || birds[birdIdx].offscreen()) {
           //running = false;
           // Cut out bird and copy into copyBirds array
-          copyBirds.push(birds.splice(birdIdx, 1)[0]);
+          copyBirds.push(birds.splice(birdIdx, 1)[0]); // shallow copy
         }
       }
 
@@ -104,7 +106,7 @@ const draw = () => {
       }
 
       draw();
-    }, 200);
+    }, 15);
   } else {
     displayGameOver();
   }
@@ -127,11 +129,11 @@ const clearBoard = () => {
  * Enables Restart Button
  */
 const displayGameOver = () => {
-  context.font = '50px MV Boli';
-  context.fillStyle = 'black';
-  context.textAlign = 'center';
-  context.fillText('Game Over', gameWidth / 2, gameHeight / 2);
-  resetBtn.innerHTML = 'Restart';
+  CONTEXT.font = '50px MV Boli';
+  CONTEXT.fillStyle = 'black';
+  CONTEXT.textAlign = 'center';
+  CONTEXT.fillText('Pause', GAME_WIDTH / 2, GAME_HEIGHT / 2);
+  pauseBtn.innerHTML = 'Continue';
 };
 
 /**
@@ -150,3 +152,11 @@ const restartGame = () => {
 };
 
 restartGame();
+
+pauseBtn.addEventListener('mousedown', () => {
+  running = !running;
+
+  if (running) {
+    draw();
+  }
+}); // not only 'click', since it triggers also on spacebar

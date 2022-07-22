@@ -4,54 +4,55 @@ const createGeneticAlgorithm = () => {
   /**
    * Creates the next bird generation
    */
-
-  let bestBird = createBird();
-
   function nextGeneration(birds, copyBirds) {
-    //birds.length = 0;
+    console.log('--- nextGen -----------------------------');
+
     calculateFitness(copyBirds);
     for (let i = 0; i < N_BIRDS; i++) {
-      birds[i] = pickOne(copyBirds);
-      //birds[i] = pickBest(copyBirds);
+      birds[i] = pickOne(copyBirds, true);
     }
 
     // I want to keep the best candidate (e.g. if next generation is a complete fail und not worth to replicate ... ;))
-    let bestBird_candidate = pickBest(copyBirds, false);
-    if (bestBird_candidate.getFitness() >= bestBird.getFitness()) {
-      // bestBird.dispose(); // dunno why this breaks
-      bestBird = bestBird_candidate;
-    } else {
-      // bestBird_candidate.dispose();
-    }
+    let bestBird = pickBest(copyBirds, false);
 
-    for (let i = 0; i < copyBirds.length; i++) {
-      console.log('idx', i, 'score', copyBirds[i].getScore());
-      // copyBirds[i].dispose();
-    }
-    console.log('');
+    // Clean up tf models
+    copyBirds.forEach((bird) => {
+      bird.dispose();
+    });
 
     copyBirds.length = 0;
-    copyBirds.push(bestBird);
+    copyBirds.push(bestBird); // Save the best
   }
 
+  /**
+   * Returns a new bird with copied brain with best fitness from bird array
+   */
   function pickBest(copyBirds, doMutate = true) {
     let maxFitness = -1;
     let bird;
 
     for (let index = 0; index < copyBirds.length; index++) {
-      if (copyBirds[index].getFitness() > maxFitness) {
+      let fitness = copyBirds[index].getFitness();
+      if (fitness > maxFitness) {
+        maxFitness = fitness;
         bird = copyBirds[index];
       }
     }
+
     let child = createBird(bird.getBrain());
     child.setScore(bird.getScore());
+    child.setFitness(bird.getFitness());
+
     if (doMutate) {
-      child.mutate(0.1, bird.getFitness());
+      child.mutate(0.05, bird.getFitness());
     }
     return child;
   }
 
-  function pickOne(copyBirds) {
+  /**
+   * Returns a new bird with copied brain selected with fitness prob from bird array
+   */
+  function pickOne(copyBirds, doMutate = true) {
     let index = 0;
     let r = Math.random();
     while (r > 0) {
@@ -59,9 +60,13 @@ const createGeneticAlgorithm = () => {
       index++;
     }
     index--;
+
     let bird = copyBirds[index];
     let child = createBird(bird.getBrain());
-    child.mutate(0.1, bird.getFitness());
+
+    if (doMutate) {
+      child.mutate(0.02, bird.getFitness());
+    }
     return child;
   }
 

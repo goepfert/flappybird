@@ -24,8 +24,8 @@ const createNetwork = (nInput_classes, nOutput_classes, _model) => {
   }
 
   function mutate(rate, fitness) {
-    // the idea is, that the fittest birds, mutate less
-    //const scale = utils.map(utils.getRandomArbitrary(0, 1 / fitness), 0, 50, 0, 1);
+    // The idea is, that fitter birds, mutate less
+    const scale = utils.map(utils.getRandomArbitrary(0, 1 / fitness), 0, 50, 0, 1);
     tf.tidy(() => {
       const weights = model.getWeights();
       const mutatedWeights = [];
@@ -35,8 +35,8 @@ const createNetwork = (nInput_classes, nOutput_classes, _model) => {
         let values = tensor.dataSync().slice();
         for (let j = 0; j < values.length; j++) {
           if (Math.random() < rate) {
-            //values[j] += scale * utils.randomGaussian();
-            values[j] += Math.random() * utils.randomGaussian();
+            values[j] += scale * Math.random() * utils.randomGaussian(); // ??? :(
+            //values[j] += Math.random() * utils.randomGaussian();
             //values[j] += utils.randomGaussian();
           }
         }
@@ -67,8 +67,8 @@ const createNetwork = (nInput_classes, nOutput_classes, _model) => {
     newModel.add(
       tf.layers.dense({
         inputShape: [nInput_classes],
-        units: 5 * nInput_classes,
-        //kernelInitializer: 'varianceScaling',
+        units: 4 * nInput_classes,
+        kernelInitializer: 'RandomNormal',
         activation: 'sigmoid',
       })
     );
