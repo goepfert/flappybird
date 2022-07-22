@@ -1,4 +1,5 @@
 /**
+ * Plain js browser game of Flappy Bird
  *
  * author: Thomas Goepfert
  *
