@@ -8,11 +8,11 @@ const createGeneticAlgorithm = () => {
   let bestBird = createBird();
 
   function nextGeneration(birds, copyBirds) {
-    birds.length = 0;
+    //birds.length = 0;
     calculateFitness(copyBirds);
     for (let i = 0; i < N_BIRDS; i++) {
-      //birds[i] = pickOne(copyBirds);
-      birds[i] = pickBest(copyBirds);
+      birds[i] = pickOne(copyBirds);
+      //birds[i] = pickBest(copyBirds);
     }
 
     // I want to keep the best candidate (e.g. if next generation is a complete fail und not worth to replicate ... ;))
@@ -25,8 +25,10 @@ const createGeneticAlgorithm = () => {
     }
 
     for (let i = 0; i < copyBirds.length; i++) {
-      copyBirds[i].dispose();
+      console.log('idx', i, 'score', copyBirds[i].getScore());
+      // copyBirds[i].dispose();
     }
+    console.log('');
 
     copyBirds.length = 0;
     copyBirds.push(bestBird);
@@ -42,6 +44,7 @@ const createGeneticAlgorithm = () => {
       }
     }
     let child = createBird(bird.getBrain());
+    child.setScore(bird.getScore());
     if (doMutate) {
       child.mutate(0.1, bird.getFitness());
     }

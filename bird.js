@@ -61,7 +61,7 @@ const createBird = (_brain) => {
     }
 
     for (let i = 0; i < obstacles.length; i++) {
-      let d = obstacles[i].left() + obstacles[i].width - x;
+      let d = obstacles[i].left() + obstacles[i].width / 2 - x;
       if (d < closestD && d > 0) {
         closest = obstacles[i];
         closestD = d;
@@ -107,6 +107,10 @@ const createBird = (_brain) => {
     // }
   }
 
+  function setScore(_score) {
+    score = _score;
+  }
+
   function getScore() {
     return score;
   }
@@ -149,6 +153,7 @@ const createBird = (_brain) => {
     think,
     offscreen,
     update,
+    setScore,
     getScore,
     getBrain,
     setFitness,

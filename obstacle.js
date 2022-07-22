@@ -34,7 +34,7 @@ const createObstacle = () => {
 
   function offscreen() {
     let ret = false;
-    if (x < 0 - GAME_WIDTH) {
+    if (x + obstacleWidth < 0) {
       ret = true;
     }
     return ret;

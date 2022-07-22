@@ -14,7 +14,7 @@ const scoreText = document.getElementById('scoreText');
 const CONTEXT = board.getContext('2d');
 const GAME_WIDTH = +board.getAttribute('width');
 const GAME_HEIGHT = +board.getAttribute('height');
-const N_BIRDS = 50;
+const N_BIRDS = 1;
 
 let frameCounter = 0;
 let frame_modulo = generateNewFrameModulo();
@@ -104,7 +104,7 @@ const draw = () => {
       }
 
       draw();
-    }, 15);
+    }, 200);
   } else {
     displayGameOver();
   }
