@@ -9,14 +9,15 @@
 
 const board = document.getElementById('board');
 const scoreText = document.getElementById('scoreText');
+const genText = document.getElementById('genText');
 const pause = document.getElementById('pauseBtn');
 
 // Globals
-// Maybe used in other modules
+// Also used in other modules
 const CONTEXT = board.getContext('2d');
 const GAME_WIDTH = +board.getAttribute('width');
 const GAME_HEIGHT = +board.getAttribute('height');
-const N_BIRDS = 50;
+const N_BIRDS = 100;
 
 let frameCounter = 0;
 let frame_modulo = generateNewFrameModulo();
@@ -29,6 +30,7 @@ let birds = [];
 let copyBirds = [];
 let obstacles = [];
 let genAlg;
+let nGEN = 0;
 
 tf.setBackend('cpu');
 
@@ -64,6 +66,7 @@ const draw = () => {
       currentScore++;
       maxScore = currentScore > maxScore ? currentScore : maxScore;
       scoreText.textContent = `${currentScore} / ${maxScore}`;
+      genText.textContent = `# generations: ${nGEN} (with ${N_BIRDS} birds per generation)`;
 
       clearBoard();
 
@@ -87,7 +90,6 @@ const draw = () => {
 
         // Check for collisions and offscreen
         if (birds[birdIdx].checkCollision(obstacles) || birds[birdIdx].offscreen()) {
-          //running = false;
           // Cut out bird and copy into copyBirds array
           copyBirds.push(birds.splice(birdIdx, 1)[0]); // shallow copy
         }
@@ -102,19 +104,20 @@ const draw = () => {
 
       // No bird left
       if (birds.length === 0) {
-        genAlg.nextGeneration(birds, copyBirds);
+        nGEN = genAlg.nextGeneration(birds, copyBirds);
         restartGame();
       }
 
       draw();
-    }, 15);
+    }, 12);
   } else {
     displayGameOver();
   }
 };
 
 function generateNewFrameModulo() {
-  return Math.floor(utils.getRandomArbitrary(40, 80));
+  //return 80;
+  return Math.floor(utils.getRandomArbitrary(50, 80));
 }
 
 /**

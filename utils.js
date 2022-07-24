@@ -1,9 +1,28 @@
 'use strict';
 
 const utils = (() => {
+  // number
+  // 1: in, 2: out
   function map(value, x1, y1, x2, y2) {
     return ((value - x1) * (y2 - x2)) / (y1 - x1) + x2;
   }
+
+  function constrain(value, min, max) {
+    value = value < min ? min : value;
+    value = value > max ? max : value;
+    return value;
+  }
+
+  function assert(condition, message) {
+    if (!condition) {
+      message = message || 'Assertion failed';
+      if (typeof Error !== 'undefined') {
+        throw new Error(message);
+      }
+      throw message; // Fallback
+    }
+  }
+
   /**
    * Returns random number between min and max
    */
@@ -41,6 +60,8 @@ const utils = (() => {
 
   return {
     map,
+    constrain,
+    assert,
     getRandomArbitrary,
     getRandomColor,
     randomGaussian,

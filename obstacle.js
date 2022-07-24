@@ -9,10 +9,11 @@ const createObstacle = () => {
 
   const spacing = Math.floor(utils.getRandomArbitrary(100, 250));
   const top = Math.floor(utils.getRandomArbitrary(5, GAME_HEIGHT - spacing - 5));
-  const bottom = GAME_HEIGHT - (top + spacing);
+  // const bottom = GAME_HEIGHT  (top + spacing);
+  const bottom = top + spacing;
   let x = GAME_WIDTH;
 
-  const obstacleWidth = Math.floor(utils.getRandomArbitrary(30, 80));
+  const obstacleWidth = Math.floor(utils.getRandomArbitrary(30, 90));
   let xVelocity = 5;
 
   function show() {
@@ -24,8 +25,10 @@ const createObstacle = () => {
     CONTEXT.strokeRect(x, 0, obstacleWidth, top);
 
     // lower part of the obstacle
-    CONTEXT.fillRect(x, GAME_HEIGHT - bottom, obstacleWidth, GAME_HEIGHT);
-    CONTEXT.strokeRect(x, GAME_HEIGHT - bottom, obstacleWidth, GAME_HEIGHT);
+    // CONTEXT.fillRect(x, GAME_HEIGHT - bottom, obstacleWidth, GAME_HEIGHT);
+    // CONTEXT.strokeRect(x, GAME_HEIGHT - bottom, obstacleWidth, GAME_HEIGHT);
+    CONTEXT.fillRect(x, bottom, obstacleWidth, GAME_HEIGHT);
+    CONTEXT.strokeRect(x, bottom, obstacleWidth, GAME_HEIGHT);
   }
 
   function update() {

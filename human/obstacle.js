@@ -12,7 +12,7 @@ const createObstacle = () => {
   const bottom = GAME_HEIGHT - (top + spacing);
   let x = GAME_WIDTH;
 
-  const obstacleWidth = Math.floor(utils.getRandomArbitrary(30, 80));
+  const obstacleWidth = Math.floor(utils.getRandomArbitrary(30, 90));
   let color = utils.getRandomColor();
 
   let xVelocity = 5;

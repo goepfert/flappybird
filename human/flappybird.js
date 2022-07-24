@@ -79,14 +79,14 @@ const draw = () => {
         frame_modulo = generateNewFrameModulo();
       }
       draw();
-    }, 17);
+    }, 16);
   } else {
     displayGameOver();
   }
 };
 
 function generateNewFrameModulo() {
-  return Math.floor(utils.getRandomArbitrary(40, 80));
+  return Math.floor(utils.getRandomArbitrary(50, 80));
 }
 
 /**

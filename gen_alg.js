@@ -4,8 +4,10 @@ const createGeneticAlgorithm = () => {
   /**
    * Creates the next bird generation
    */
+  let n_gen = 0;
+
   function nextGeneration(birds, copyBirds) {
-    console.log('--- nextGen -----------------------------');
+    console.log(`--- nextGen: ${n_gen++} -----------------------------`);
 
     calculateFitness(copyBirds);
     for (let i = 0; i < N_BIRDS; i++) {
@@ -22,6 +24,8 @@ const createGeneticAlgorithm = () => {
 
     copyBirds.length = 0;
     copyBirds.push(bestBird); // Save the best
+
+    return n_gen;
   }
 
   /**
@@ -65,7 +69,7 @@ const createGeneticAlgorithm = () => {
     let child = createBird(bird.getBrain());
 
     if (doMutate) {
-      child.mutate(0.02, bird.getFitness());
+      child.mutate(0.1, bird.getFitness());
     }
     return child;
   }
@@ -77,11 +81,22 @@ const createGeneticAlgorithm = () => {
   function calculateFitness(birds) {
     let sum = 0;
     for (let i = 0; i < birds.length; i++) {
+      // respect for beeing closer to the opening than other birds
+      let score = birds[i].getScore();
+      let closestGate = birds[i].getClosestGate();
+      if (closestGate != 0) {
+        closestGate = utils.map(closestGate, 0, GAME_HEIGHT, 1, 0);
+      }
+      // console.log('🚀 ~ file: gen_alg.js ~ line 86 ~ calculateFitness ~ closestGate', i, closestGate);
+
+      birds[i].setScore(score + closestGate);
+
       sum += birds[i].getScore();
     }
     // Divide by the sum
     for (let i = 0; i < birds.length; i++) {
       birds[i].setFitness(birds[i].getScore() / sum);
+      // console.log('🚀 ~ file: gen_alg.js ~ line 95 ~ calculateFitness ~ birds[i].getFitness();', birds[i].getFitness());
     }
   }
 

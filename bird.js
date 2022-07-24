@@ -15,12 +15,13 @@ const createBird = (_brain) => {
   let yVelocity = 0;
   let score = 0;
   let fitness = 0;
+  let closestGate = 0;
   let brain;
 
   if (_brain !== undefined) {
     brain = _brain.copy();
   } else {
-    brain = createNetwork(5, 2);
+    brain = createNetwork(6, 2);
   }
 
   function dispose() {
@@ -70,10 +71,11 @@ const createBird = (_brain) => {
 
     let inputs = [];
     inputs[0] = y / GAME_HEIGHT;
-    inputs[1] = closest.top / GAME_HEIGHT;
-    inputs[2] = closest.bottom / GAME_HEIGHT;
-    inputs[3] = closest.left() / GAME_WIDTH;
-    inputs[4] = yVelocity / 10;
+    inputs[1] = yVelocity / 10;
+    inputs[2] = closest.top / GAME_HEIGHT;
+    inputs[3] = closest.bottom / GAME_HEIGHT;
+    inputs[4] = closest.left() / GAME_WIDTH;
+    inputs[5] = closest.right() / GAME_WIDTH;
 
     let xs = tf.tensor2d([inputs]);
     let output = brain.predict(xs);
@@ -107,6 +109,31 @@ const createBird = (_brain) => {
     // }
   }
 
+  /**
+   * Check for collision with obstacles
+   */
+  function checkCollision(obstacles) {
+    let hit = false;
+
+    for (let idx = 0; idx < obstacles.length; idx++) {
+      if (x > obstacles[idx].left() && x < obstacles[idx].right()) {
+        if (y < obstacles[idx].top || y > obstacles[idx].bottom) {
+          hit = true;
+
+          let min = Math.abs(y - obstacles[idx].top);
+          let min2 = Math.abs(GAME_HEIGHT - obstacles[idx].bottom - y);
+          if (min2 < min) {
+            min = min2;
+          }
+          closestGate = min;
+          break;
+        }
+      }
+    }
+
+    return hit;
+  }
+
   function setScore(_score) {
     score = _score;
   }
@@ -127,22 +154,8 @@ const createBird = (_brain) => {
     return fitness;
   }
 
-  /**
-   * Check for collision with obstacles
-   */
-  function checkCollision(obstacles) {
-    let hit = false;
-
-    for (let idx = 0; idx < obstacles.length; idx++) {
-      if (x > obstacles[idx].left() && x < obstacles[idx].right()) {
-        if (y < obstacles[idx].top || y > GAME_HEIGHT - obstacles[idx].bottom) {
-          hit = true;
-          break;
-        }
-      }
-    }
-
-    return hit;
+  function getClosestGate() {
+    return closestGate;
   }
 
   return {
@@ -153,11 +166,12 @@ const createBird = (_brain) => {
     think,
     offscreen,
     update,
+    checkCollision,
     setScore,
     getScore,
     getBrain,
     setFitness,
     getFitness,
-    checkCollision,
+    getClosestGate,
   };
 };

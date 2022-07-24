@@ -67,7 +67,7 @@ const createNetwork = (nInput_classes, nOutput_classes, _model) => {
     newModel.add(
       tf.layers.dense({
         inputShape: [nInput_classes],
-        units: 5 * nInput_classes,
+        units: 4 * nInput_classes,
         kernelInitializer: 'RandomNormal',
         activation: 'sigmoid',
       })
