@@ -1,11 +1,11 @@
 'use strict';
 
 const createGeneticAlgorithm = () => {
+  let n_gen = 0;
+
   /**
    * Creates the next bird generation
    */
-  let n_gen = 0;
-
   function nextGeneration(birds, copyBirds) {
     console.log(`--- nextGen: ${n_gen++} -----------------------------`);
 
