@@ -12,6 +12,11 @@ const scoreText = document.getElementById('scoreText');
 const genText = document.getElementById('genText');
 const pause = document.getElementById('pauseBtn');
 
+const slider = document.getElementById('myRange');
+let slider_output = document.getElementById('demo');
+slider_output.innerHTML = slider.value; // Display the default slider value
+let draw_modulo = slider.value;
+
 // Globals
 // Also used in other modules
 const CONTEXT = board.getContext('2d');
@@ -20,7 +25,8 @@ const GAME_HEIGHT = +board.getAttribute('height');
 const N_BIRDS = 100;
 
 let frameCounter = 0;
-let frame_modulo = generateNewFrameModulo();
+let obstacleCounter = 0;
+let obstacle_modulo = generateNewFrameModulo();
 let gameID = 0;
 let running = false;
 let currentScore = 0;
@@ -58,17 +64,23 @@ const setup = () => {
 /**
  * The draw loop
  */
+
 const draw = () => {
   if (running) {
     gameID = setTimeout(() => {
       pauseBtn.innerHTML = 'Pause';
-      frameCounter++;
-      currentScore++;
-      maxScore = currentScore > maxScore ? currentScore : maxScore;
-      scoreText.textContent = `${currentScore} / ${maxScore}`;
-      genText.textContent = `# generations: ${nGEN} (with ${N_BIRDS} birds per generation)`;
 
-      clearBoard();
+      show_modulo(() => {
+        maxScore = currentScore > maxScore ? currentScore : maxScore;
+        scoreText.textContent = `${currentScore} / ${maxScore}`;
+        genText.textContent = `# generations: ${nGEN} (with ${N_BIRDS} birds per generation)`;
+      });
+
+      frameCounter++;
+      obstacleCounter++;
+      currentScore++;
+
+      show_modulo(clearBoard);
 
       // Filter out obstacles than run out of screen
       obstacles = obstacles.filter((obstacle) => {
@@ -78,7 +90,7 @@ const draw = () => {
       // Update and draw obstacles
       obstacles.forEach((obstacle) => {
         obstacle.update();
-        obstacle.show();
+        show_modulo(obstacle.show);
       });
 
       // Update and draw birds
@@ -86,7 +98,7 @@ const draw = () => {
       for (let birdIdx = birds.length - 1; birdIdx >= 0; birdIdx--) {
         birds[birdIdx].think(obstacles);
         birds[birdIdx].update();
-        birds[birdIdx].show();
+        show_modulo(birds[birdIdx].show);
 
         // Check for collisions and offscreen
         if (birds[birdIdx].checkCollision(obstacles) || birds[birdIdx].offscreen()) {
@@ -96,10 +108,10 @@ const draw = () => {
       }
 
       // Create new obstacle if needed
-      if (frameCounter % frame_modulo === 0) {
+      if (obstacleCounter % obstacle_modulo === 0) {
         obstacles.push(createObstacle());
-        frameCounter = 0;
-        frame_modulo = generateNewFrameModulo();
+        obstacleCounter = 0;
+        obstacle_modulo = generateNewFrameModulo();
       }
 
       // No bird left
@@ -109,11 +121,17 @@ const draw = () => {
       }
 
       draw();
-    }, 12);
+    }, 10);
   } else {
     displayGameOver();
   }
 };
+
+function show_modulo(fcn) {
+  if (frameCounter % draw_modulo === 0) {
+    fcn();
+  }
+}
 
 function generateNewFrameModulo() {
   //return 80;
@@ -148,6 +166,7 @@ const restartGame = () => {
   running = false;
   obstacles.length = 0;
   frameCounter = 0;
+  obstacleCounter = 0;
   clearTimeout(gameID);
   clearBoard();
   setup();
@@ -159,8 +178,13 @@ restartGame();
 
 pauseBtn.addEventListener('mousedown', () => {
   running = !running;
-
   if (running) {
     draw();
   }
 }); // not only 'click', since it triggers also on spacebar
+
+// Update the current slider value (each time you drag the slider handle)
+slider.oninput = function () {
+  slider_output.innerHTML = this.value;
+  draw_modulo = this.value;
+};
