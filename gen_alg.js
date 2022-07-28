@@ -1,3 +1,7 @@
+/**
+ * Creates a new genetic algorithm for bird generation, survival of the fittest
+ */
+
 'use strict';
 
 const createGeneticAlgorithm = () => {

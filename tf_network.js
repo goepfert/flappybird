@@ -1,5 +1,6 @@
 /**
- * Creates the neural network and provides essential operations on that brain like copy and mutation
+ * Creates the neural network (birds brain)
+ * Provides essential operations on that brain like thinking (predict) copy and mutation
  */
 
 'use strict';
@@ -53,7 +54,7 @@ const createNetwork = (nInput_classes, nOutput_classes, _model) => {
             //values[j] += utils.randomGaussian();
           }
         }
-        let newTensor = tf.tensor(values, shape);
+        const newTensor = tf.tensor(values, shape);
         mutatedWeights[i] = newTensor;
       }
       model.setWeights(mutatedWeights);

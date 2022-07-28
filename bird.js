@@ -1,5 +1,8 @@
 /**
  * I'M A BIRD MOTHA' F*****
+ *
+ * Bird can fly, has a brain and can think about it's next move
+ *
  */
 
 'use strict';
@@ -48,12 +51,19 @@ const createBird = (_brain) => {
     yVelocity += lift;
   }
 
+  /**
+   * Mutate the brain with some rate (probability that weight get mutated or kept/inherited/copied unchanged)
+   */
   function mutate(rate, fitness) {
     brain.mutate(rate, fitness);
   }
 
+  /**
+   * What shall the bird do with the current constellation of itself and the obstacles?
+   * Flapping it wings or let gravity win?
+   */
   function think(obstacles) {
-    // Find the closest obstacle
+    // Find the closest obstacle, all others are irgnored
     let closest = null;
     let closestD = Infinity;
 
@@ -62,13 +72,15 @@ const createBird = (_brain) => {
     }
 
     for (let i = 0; i < obstacles.length; i++) {
-      let d = obstacles[i].left() + obstacles[i].width / 2 - x;
+      //let d = obstacles[i].left() + obstacles[i].width / 2 - x;
+      let d = obstacles[i].right() - x;
       if (d < closestD && d > 0) {
         closest = obstacles[i];
         closestD = d;
       }
     }
 
+    // Define some reasonable inputs for the neural net
     let inputs = [];
     inputs[0] = y / GAME_HEIGHT;
     inputs[1] = yVelocity / 10;
@@ -100,6 +112,7 @@ const createBird = (_brain) => {
     yVelocity = yVelocity + gravity; // v = a*t + v_0; t==1
     y = y + yVelocity;
 
+    // uncomment if you want to allow hitting top and bottom
     // if (y > GAME_HEIGHT) {
     //   yVelocity = 0;
     //   y = GAME_HEIGHT;
@@ -134,6 +147,11 @@ const createBird = (_brain) => {
     return hit;
   }
 
+  /**
+   * Bunch of setter and getters
+   * Why do I need a function here? :(
+   * https://stackoverflow.com/questions/8893099/javascript-revealing-module-pattern-public-properties
+   */
   function setScore(_score) {
     score = _score;
   }

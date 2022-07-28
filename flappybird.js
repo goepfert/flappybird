@@ -10,10 +10,11 @@
 const board = document.getElementById('board');
 const scoreText = document.getElementById('scoreText');
 const genText = document.getElementById('genText');
-const pause = document.getElementById('pauseBtn');
-
+const moreText = document.getElementById('moreText');
+// const pause = document.getElementById('pauseBtn');
 const slider = document.getElementById('myRange');
-let slider_output = document.getElementById('demo');
+const slider_output = document.getElementById('demo');
+
 slider_output.innerHTML = slider.value; // Display the default slider value
 let draw_modulo = slider.value;
 
@@ -36,7 +37,7 @@ let birds = [];
 let copyBirds = [];
 let obstacles = [];
 let genAlg;
-let nGEN = 0;
+let N_GEN = 0;
 
 tf.setBackend('cpu');
 
@@ -64,16 +65,16 @@ const setup = () => {
 /**
  * The draw loop
  */
-
 const draw = () => {
   if (running) {
     gameID = setTimeout(() => {
-      pauseBtn.innerHTML = 'Pause';
+      // pauseBtn.innerHTML = 'Pause';
 
       show_modulo(() => {
         maxScore = currentScore > maxScore ? currentScore : maxScore;
         scoreText.textContent = `${currentScore} / ${maxScore}`;
-        genText.textContent = `# generations: ${nGEN} (with ${N_BIRDS} birds per generation)`;
+        genText.textContent = `# generations: ${N_GEN} (with ${N_BIRDS} birds per generation)`;
+        moreText.textContent = `birds left: ${birds.length}`;
       });
 
       frameCounter++;
@@ -116,25 +117,30 @@ const draw = () => {
 
       // No bird left
       if (birds.length === 0) {
-        nGEN = genAlg.nextGeneration(birds, copyBirds);
+        N_GEN = genAlg.nextGeneration(birds, copyBirds);
         restartGame();
       }
 
       draw();
-    }, 10);
+    }, 1);
   } else {
     displayGameOver();
   }
 };
 
+/**
+ * Callback only executed if condition met
+ */
 function show_modulo(fcn) {
   if (frameCounter % draw_modulo === 0) {
     fcn();
   }
 }
 
+/**
+ * Returns new random modulo number
+ */
 function generateNewFrameModulo() {
-  //return 80;
   return Math.floor(utils.getRandomArbitrary(50, 80));
 }
 
@@ -148,19 +154,17 @@ const clearBoard = () => {
 
 /**
  * Display Game Over text
- * Enables Restart Button
  */
 const displayGameOver = () => {
   CONTEXT.font = '50px MV Boli';
   CONTEXT.fillStyle = 'black';
   CONTEXT.textAlign = 'center';
   CONTEXT.fillText('Pause', GAME_WIDTH / 2, GAME_HEIGHT / 2);
-  pauseBtn.innerHTML = 'Continue';
+  // pauseBtn.innerHTML = 'Continue';
 };
 
 /**
  * Start a fresh game
- * Block Start/Restart Button
  */
 const restartGame = () => {
   running = false;
@@ -174,14 +178,16 @@ const restartGame = () => {
   draw();
 };
 
+// Directly call for a new game
 restartGame();
 
-pauseBtn.addEventListener('mousedown', () => {
-  running = !running;
-  if (running) {
-    draw();
-  }
-}); // not only 'click', since it triggers also on spacebar
+// Event Listeners ------------------------------------------------
+// pauseBtn.addEventListener('mousedown', () => {
+//   running = !running;
+//   if (running) {
+//     draw();
+//   }
+// }); // not only 'click', since it triggers also on spacebar
 
 // Update the current slider value (each time you drag the slider handle)
 slider.oninput = function () {
