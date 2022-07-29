@@ -122,7 +122,7 @@ const draw = () => {
       }
 
       draw();
-    }, 1);
+    }, 10);
   } else {
     displayGameOver();
   }
